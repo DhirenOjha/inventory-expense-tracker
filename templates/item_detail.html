@@ -1,0 +1,167 @@
+{% extends "_base.html" %}
+{% set title = item.item.name %}
+
+{% block content %}
+  <section class="section">
+    <div class="section__header">
+      <div>
+        <h1 class="h1">{{ item.item.name }}</h1>
+        <div class="muted">
+          Unit: <strong>{{ item.item.unit }}</strong>
+          - Qty on hand: <strong>{{ item.item.quantity_on_hand }}</strong>
+          - Avg unit cost: <strong>{{ item.item.avg_unit_cost }}</strong>
+        </div>
+        {% if item.item.description %}
+        <div class="muted small" style="margin-top:6px">
+          {{ item.item.description }}
+        </div>
+        {% endif %}
+      </div>
+      <div class="actions">
+        <a class="button button--ghost" href="/items">Back</a>
+        <form method="post" action="/items/{{ item.item.id }}/delete" onsubmit="return confirm('Delete this item and all its purchases/usages?')">
+          <button class="button button--danger" type="submit">Delete item</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <div class="card__label">On-hand value</div>
+        <div class="card__value">{{ item.item.quantity_on_hand * item.item.avg_unit_cost }}</div>
+        <div class="card__hint">Qty x avg unit cost</div>
+      </div>
+      <div class="card">
+        <div class="card__label">Total usage expense (this item)</div>
+        <div class="card__value">{{ item.usages | sum(attribute="expense_amount") }}</div>
+        <div class="card__hint">Sum of usage expense rows</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="grid grid--2">
+      <div class="card">
+        <h2 class="h2">Record purchase (stock in)</h2>
+        <form class="form" method="post" action="/items/{{ item.item.id }}/purchase">
+          <label class="field">
+            <span class="field__label">Quantity ({{ item.item.unit }})</span>
+            <input class="input" name="quantity" inputmode="decimal" placeholder="e.g., 5" required />
+          </label>
+          <label class="field">
+            <span class="field__label">Unit price</span>
+            <input class="input" name="unit_price" inputmode="decimal" placeholder="e.g., 40.50" required />
+          </label>
+          <label class="field">
+            <span class="field__label">Payment method</span>
+            <select class="input" name="payment_method" required>
+              <option value="cash">Cash</option>
+              <option value="online">Online</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="field__label">Date (optional)</span>
+            <input class="input" type="date" name="purchased_on" />
+          </label>
+          <div class="actions">
+            <button class="button" type="submit">Add purchase</button>
+          </div>
+        </form>
+        <p class="muted small">This updates your average unit cost.</p>
+      </div>
+
+      <div class="card">
+        <h2 class="h2">Record usage (stock out + expense)</h2>
+        <form class="form" method="post" action="/items/{{ item.item.id }}/use">
+          <label class="field">
+            <span class="field__label">Quantity used ({{ item.item.unit }})</span>
+            <input class="input" name="quantity" inputmode="decimal" placeholder="e.g., 1.5" required />
+          </label>
+          <label class="field">
+            <span class="field__label">Date (optional)</span>
+            <input class="input" type="date" name="used_on" />
+          </label>
+          <div class="actions">
+            <button class="button button--danger" type="submit">Record usage</button>
+          </div>
+        </form>
+        <p class="muted small">Expense = quantity used x current average unit cost.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="grid grid--2">
+      <div>
+        <h2 class="h2">Recent purchases</h2>
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th class="right">Qty</th>
+                <th class="right">Unit price</th>
+                <th>Paid</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for p in item.purchases %}
+              <tr>
+                <td>{{ p.purchased_on }}</td>
+                <td class="right">{{ p.quantity }}</td>
+                <td class="right">{{ p.unit_price }}</td>
+                <td class="muted">{{ p.payment_method }}</td>
+                <td class="right">
+                  <form method="post" action="/items/{{ item.item.id }}/purchases/{{ p.id }}/delete" onsubmit="return confirm('Delete this purchase? This will recompute stock/cost.')">
+                    <button class="button button--ghost" type="submit">Delete</button>
+                  </form>
+                </td>
+              </tr>
+              {% endfor %}
+              {% if (item.purchases | length) == 0 %}
+              <tr><td colspan="5" class="muted">No purchases yet.</td></tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div>
+        <h2 class="h2">Recent usage (expense)</h2>
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th class="right">Qty</th>
+                <th class="right">Unit cost</th>
+                <th class="right">Expense</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for u in item.usages %}
+              <tr>
+                <td>{{ u.used_on }}</td>
+                <td class="right">{{ u.quantity }}</td>
+                <td class="right">{{ u.unit_cost }}</td>
+                <td class="right">{{ u.expense_amount }}</td>
+                <td class="right">
+                  <form method="post" action="/items/{{ item.item.id }}/usages/{{ u.id }}/delete" onsubmit="return confirm('Delete this usage? This will recompute stock/cost/expense.')">
+                    <button class="button button--ghost" type="submit">Delete</button>
+                  </form>
+                </td>
+              </tr>
+              {% endfor %}
+              {% if (item.usages | length) == 0 %}
+              <tr><td colspan="5" class="muted">No usage recorded yet.</td></tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+

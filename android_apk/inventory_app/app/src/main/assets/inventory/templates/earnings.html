@@ -1,0 +1,56 @@
+{% extends "_base.html" %}
+{% set title = "Earnings" %}
+
+{% block content %}
+  <section class="section">
+    <div class="section__header">
+      <h1 class="h1">Earnings</h1>
+      <a class="button button--ghost" href="/">Back</a>
+    </div>
+
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th class="right">Amount</th>
+            <th>Method</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for e in earnings %}
+          <tr>
+            <td>
+              <form method="post" action="/earnings/{{ e.id }}/update" class="actions" style="justify-content:flex-start">
+                <input class="input" style="max-width:160px" type="date" name="earned_on" value="{{ e.earned_on }}" required />
+            </td>
+            <td class="right">
+                <input class="input" style="max-width:140px;text-align:right" name="amount" inputmode="decimal" value="{{ e.amount }}" required />
+            </td>
+            <td>
+                <select class="input" style="max-width:140px" name="payment_method" required>
+                  <option value="cash" {% if e.payment_method == "cash" %}selected{% endif %}>Cash</option>
+                  <option value="online" {% if e.payment_method == "online" %}selected{% endif %}>Online</option>
+                </select>
+            </td>
+            <td class="right">
+                <button class="button button--ghost" type="submit">Update</button>
+              </form>
+              <form method="post" action="/earnings/{{ e.id }}/delete" onsubmit="return confirm('Delete this earning entry?')">
+                <button class="button button--danger" type="submit">Delete</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+          {% if (earnings | length) == 0 %}
+          <tr>
+            <td colspan="4" class="muted">No earnings logged yet.</td>
+          </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+{% endblock %}
+

@@ -1,0 +1,71 @@
+{% extends "_base.html" %}
+{% set title = "Items" %}
+
+{% block content %}
+  <section class="section">
+    <div class="section__header">
+      <h1 class="h1">Raw materials</h1>
+      <a class="button button--ghost" href="/">Back</a>
+    </div>
+
+    <div class="card">
+      <h2 class="h2">Add item</h2>
+      <form class="form" method="post" action="/items">
+        <div class="grid">
+          <label class="field">
+            <span class="field__label">Name</span>
+            <input class="input" name="name" placeholder="e.g., Rice" required />
+          </label>
+          <label class="field">
+            <span class="field__label">Unit</span>
+            <input class="input" name="unit" placeholder="e.g., kg, L, pcs" required />
+          </label>
+        </div>
+        <label class="field">
+          <span class="field__label">Description (optional)</span>
+          <input class="input" name="description" placeholder="e.g., Basmati 1121, supplier: ABC, 25kg bag" />
+        </label>
+        <div class="actions">
+          <button class="button" type="submit">Create</button>
+        </div>
+      </form>
+      <p class="muted small">Tip: keep names unique (e.g., "Tomato - 1kg crate" vs "Tomato - loose").</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2 class="h2">All items</h2>
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Description</th>
+            <th>Unit</th>
+            <th class="right">Qty on hand</th>
+            <th class="right">Avg unit cost</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in items %}
+          <tr>
+            <td>{{ item.name }}</td>
+            <td class="muted">{{ item.description }}</td>
+            <td>{{ item.unit }}</td>
+            <td class="right">{{ item.quantity_on_hand }}</td>
+            <td class="right">{{ item.avg_unit_cost }}</td>
+            <td class="right"><a href="/items/{{ item.id }}">Open</a></td>
+          </tr>
+          {% endfor %}
+          {% if (items | length) == 0 %}
+          <tr>
+            <td colspan="6" class="muted">No items yet.</td>
+          </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+{% endblock %}
+

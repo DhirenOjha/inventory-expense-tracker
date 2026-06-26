@@ -1,0 +1,89 @@
+{% extends "_base.html" %}
+{% set title = report.title %}
+
+{% block content %}
+  <section class="section">
+    <div class="section__header">
+      <div>
+        <h1 class="h1">{{ report.title }}</h1>
+        <div class="muted small">Generated at {{ report.generated_at }}</div>
+      </div>
+      <a class="button button--ghost" href="/">Back</a>
+    </div>
+
+    <div class="grid grid--2">
+      <div class="card">
+        <div class="card__label">Overall</div>
+        <div class="kv">
+          <div class="kv__row">
+            <div class="kv__k">Earnings</div>
+            <div class="kv__v">{{ report.totals.earnings }}</div>
+          </div>
+          <div class="kv__row">
+            <div class="kv__k">Purchases</div>
+            <div class="kv__v">{{ report.totals.purchases }}</div>
+          </div>
+          <div class="kv__row">
+            <div class="kv__k">Usage expense</div>
+            <div class="kv__v">{{ report.totals.usage_expense }}</div>
+          </div>
+          <div class="kv__row">
+            <div class="kv__k">Profit</div>
+            <div class="kv__v">{{ report.totals.profit_overall }}</div>
+          </div>
+        </div>
+        <div class="card__hint">Profit = earnings − usage expense</div>
+      </div>
+
+      <div class="card">
+        <div class="card__label">Cash vs Online</div>
+        <div class="kv">
+          <div class="kv__row">
+            <div class="kv__k">Earnings (cash / online)</div>
+            <div class="kv__v">{{ report.totals.earnings_cash }} / {{ report.totals.earnings_online }}</div>
+          </div>
+          <div class="kv__row">
+            <div class="kv__k">Purchases (cash / online)</div>
+            <div class="kv__v">{{ report.totals.purchases_cash }} / {{ report.totals.purchases_online }}</div>
+          </div>
+          <div class="kv__row">
+            <div class="kv__k">Profit (cash / online)</div>
+            <div class="kv__v">{{ report.totals.profit_cash }} / {{ report.totals.profit_online }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2 class="h2">{{ report.table_title }}</h2>
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>{{ report.bucket_label }}</th>
+            <th class="right">Earnings</th>
+            <th class="right">Purchases</th>
+            <th class="right">Usage expense</th>
+            <th class="right">Profit</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in report.rows %}
+          <tr>
+            <td>{{ r.bucket }}</td>
+            <td class="right">{{ r.earnings }}</td>
+            <td class="right">{{ r.purchases }}</td>
+            <td class="right">{{ r.usage_expense }}</td>
+            <td class="right">{{ r.profit_overall }}</td>
+          </tr>
+          {% endfor %}
+          {% if (report.rows | length) == 0 %}
+          <tr><td colspan="5" class="muted">No data for this range.</td></tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+{% endblock %}
+

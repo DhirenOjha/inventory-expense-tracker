@@ -1,0 +1,203 @@
+{% extends "_base.html" %}
+{% set title = "Dashboard" %}
+
+{% block content %}
+  <section class="section">
+    <h1 class="h1">Dashboard</h1>
+    <h2 class="h2">This month ({{ dashboard.month }})</h2>
+    <div class="cards">
+      <div class="card">
+        <div class="card__label">Profit (overall)</div>
+        <div class="card__value">{{ dashboard.month_profit_overall }}</div>
+        <div class="card__hint">Earnings − usage expense</div>
+      </div>
+      <div class="card">
+        <div class="card__label">Earnings</div>
+        <div class="kv">
+          <div class="kv__row">
+            <div class="kv__k">Cash</div>
+            <div class="kv__v">{{ dashboard.month_earnings_cash }}</div>
+          </div>
+          <div class="kv__row">
+            <div class="kv__k">Online</div>
+            <div class="kv__v">{{ dashboard.month_earnings_online }}</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card__label">Expenses</div>
+        <div class="kv">
+          <div class="kv__row">
+            <div class="kv__k">Purchases (cash)</div>
+            <div class="kv__v">{{ dashboard.month_purchase_expense_cash }}</div>
+          </div>
+          <div class="kv__row">
+            <div class="kv__k">Purchases (online)</div>
+            <div class="kv__v">{{ dashboard.month_purchase_expense_online }}</div>
+          </div>
+          <div class="kv__row">
+            <div class="kv__k">Usage expense</div>
+            <div class="kv__v">{{ dashboard.month_usage_expense }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <h2 class="h2">Profit split (this month)</h2>
+    <div class="cards">
+      <div class="card">
+        <div class="card__label">Cash profit</div>
+        <div class="card__value">{{ dashboard.month_profit_cash }}</div>
+        <div class="card__hint">Cash earnings − cash purchases</div>
+      </div>
+      <div class="card">
+        <div class="card__label">Online profit</div>
+        <div class="card__value">{{ dashboard.month_profit_online }}</div>
+        <div class="card__hint">Online earnings − online purchases</div>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <h2 class="h2">Monthly summary</h2>
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Month</th>
+            <th class="right">Earnings (cash)</th>
+            <th class="right">Earnings (online)</th>
+            <th class="right">Purchases (cash)</th>
+            <th class="right">Purchases (online)</th>
+            <th class="right">Usage expense</th>
+            <th class="right">Profit</th>
+            <th class="right">Profit (cash)</th>
+            <th class="right">Profit (online)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in dashboard.monthly_rows %}
+          <tr>
+            <td>{{ r.month }}</td>
+            <td class="right">{{ r.earnings_cash }}</td>
+            <td class="right">{{ r.earnings_online }}</td>
+            <td class="right">{{ r.purchase_expense_cash }}</td>
+            <td class="right">{{ r.purchase_expense_online }}</td>
+            <td class="right">{{ r.usage_expense }}</td>
+            <td class="right">{{ r.profit_overall }}</td>
+            <td class="right">{{ r.profit_cash }}</td>
+            <td class="right">{{ r.profit_online }}</td>
+          </tr>
+          {% endfor %}
+          {% if (dashboard.monthly_rows | length) == 0 %}
+          <tr>
+            <td colspan="9" class="muted">No data yet.</td>
+          </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+
+    <hr class="divider" />
+
+    <h2 class="h2">Inventory</h2>
+    <div class="cards">
+      <div class="card">
+        <div class="card__label">Inventory value (approx.)</div>
+        <div class="card__value">{{ dashboard.total_inventory_value }}</div>
+        <div class="card__hint">Qty on hand x avg unit cost</div>
+      </div>
+      <div class="card">
+        <div class="card__label">Items</div>
+        <div class="card__value">{{ dashboard.items | length }}</div>
+        <div class="card__hint"><a href="/items">Manage items</a></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="grid grid--2">
+      <div class="card">
+        <h2 class="h2">Log daily earnings</h2>
+        <form class="form" method="post" action="/earnings">
+          <label class="field">
+            <span class="field__label">Amount</span>
+            <input class="input" name="amount" inputmode="decimal" placeholder="e.g., 1500" required />
+          </label>
+          <label class="field">
+            <span class="field__label">Payment method</span>
+            <select class="input" name="payment_method" required>
+              <option value="cash">Cash</option>
+              <option value="online">Online</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="field__label">Date (optional)</span>
+            <input class="input" type="date" name="earned_on" />
+          </label>
+          <div class="actions">
+            <button class="button" type="submit">Add earning</button>
+          </div>
+        </form>
+        <p class="muted small">Profit uses the same date to match usage expense.</p>
+      </div>
+
+      <div class="card">
+        <h2 class="h2">Reports & entries</h2>
+        <div class="actions" style="justify-content:flex-start;flex-wrap:wrap">
+          <a class="button button--ghost" href="/earnings">Manage earnings</a>
+        </div>
+        <hr class="divider" />
+        <h3 class="h2" style="margin-top:0">Download reports</h3>
+        <div class="actions" style="justify-content:flex-start;flex-wrap:wrap">
+          <a class="button button--ghost" href="/reports.xlsx?range=daily">Daily (Excel)</a>
+          <a class="button button--ghost" href="/reports.xlsx?range=monthly">Monthly (Excel)</a>
+          <a class="button button--ghost" href="/reports.xlsx?range=3months">Last 3 months (Excel)</a>
+          <a class="button button--ghost" href="/reports?range=monthly">Monthly (HTML)</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section__header">
+      <h2 class="h2">Current stock</h2>
+      <a class="button" href="/items">Add / update items</a>
+    </div>
+
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th class="right">Qty on hand</th>
+            <th>Unit</th>
+            <th class="right">Avg unit cost</th>
+            <th class="right">Value</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in dashboard.items %}
+          <tr>
+            <td>{{ item.name }}</td>
+            <td class="right">{{ item.quantity_on_hand }}</td>
+            <td>{{ item.unit }}</td>
+            <td class="right">{{ item.avg_unit_cost }}</td>
+            <td class="right">{{ item.quantity_on_hand * item.avg_unit_cost }}</td>
+            <td class="right"><a href="/items/{{ item.id }}">Open</a></td>
+          </tr>
+          {% endfor %}
+          {% if (dashboard.items | length) == 0 %}
+          <tr>
+            <td colspan="6" class="muted">No items yet. Add your first raw material.</td>
+          </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+{% endblock %}
+

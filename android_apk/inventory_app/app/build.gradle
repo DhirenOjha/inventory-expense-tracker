@@ -1,0 +1,59 @@
+plugins {
+    id "com.android.application"
+    id "org.jetbrains.kotlin.android"
+    id "com.chaquo.python"
+}
+
+android {
+    namespace "com.example.inventoryexpensetracker"
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.example.inventoryexpensetracker"
+        minSdk 26
+        targetSdk 34
+        versionCode 2
+        versionName "1.0"
+
+        ndk {
+            abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
+        }
+
+        python {
+            version "3.9"
+            buildPython "python3"
+            // Chaquopy will bundle these pip dependencies into the APK
+            pip {
+                install "fastapi==0.99.1"
+                install "uvicorn>=0.27"
+                install "jinja2>=3.1"
+                install "python-multipart>=0.0.9"
+                install "pydantic<2.0"
+                install "openpyxl>=3.1"
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+
+}
+
+
+
+dependencies {
+    implementation "androidx.core:core-ktx:1.13.1"
+    implementation "androidx.appcompat:appcompat:1.7.0"
+}
+

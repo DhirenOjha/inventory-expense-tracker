@@ -1,0 +1,21 @@
+{% extends "_base.html" %}
+{% set title = "Error" %}
+
+{% block content %}
+  <section class="section">
+    <div class="section__header">
+      <div>
+        <h1 class="h1">Something went wrong</h1>
+        <div class="muted">HTTP {{ status_code }}</div>
+      </div>
+      <a class="button button--ghost" href="/">Back to dashboard</a>
+    </div>
+
+    <div class="card">
+      <div class="card__label">Message</div>
+      <div class="card__value" style="font-size:16px">{{ message }}</div>
+      <div class="card__hint"><a href="/items">Go to items</a></div>
+    </div>
+  </section>
+{% endblock %}
+

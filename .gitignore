@@ -1,0 +1,31 @@
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Local shop data — do not commit
+data/*.db
+data/*.db-journal
+*.db
+*.db-journal
+
+.DS_Store
+.idea/
+*.iml
+.vscode/
+
+# Android / Gradle
+android_apk/**/build/
+android_apk/**/.gradle/
+android_apk/**/local.properties
+android_apk/**/.idea/
+*.apk
+*.aab
+*.ap_
+captures/
+.cxx/
+*.hprof

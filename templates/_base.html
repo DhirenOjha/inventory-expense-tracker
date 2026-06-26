@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{ title or "Inventory + Expense Tracker" }}</title>
+    <link rel="stylesheet" href="/static/app.css" />
+  </head>
+  <body>
+    <header class="header">
+      <div class="container header__inner">
+        <div class="brand">
+          <a class="brand__link" href="/">Inventory</a>
+          <span class="brand__muted">raw materials + usage expense</span>
+        </div>
+        <nav class="nav">
+          <a class="nav__link" href="/">Dashboard</a>
+          <a class="nav__link" href="/items">Items</a>
+          <a class="nav__link" href="/earnings">Earnings</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+      <div class="container footer__inner">
+        <span>Local prototype - SQLite</span>
+      </div>
+    </footer>
+  </body>
+</html>
+
